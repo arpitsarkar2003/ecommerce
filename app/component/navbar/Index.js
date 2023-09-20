@@ -4,9 +4,10 @@ import { GlobalContext } from "@/app/context/Index";
 import { adminNavOptions, navOptions } from "@/app/utils";
 import { Fragment, useContext } from "react";
 import CommonModal from "../CommonModal/Index";
+import { useRouter } from "next/navigation";
 
 const isAdminView = false;
-const isAuthView = true;
+const isAuthView = false;
 const user = {
     role: 'admin'
 }
@@ -56,7 +57,7 @@ function NavItems({ isModalView = false }) {
 export default function Navbar() {
 
     const { showNavModal, setShowNavModal } = useContext(GlobalContext);
-
+    const router = useRouter();
 
 
     return (
@@ -90,7 +91,7 @@ export default function Navbar() {
                                 "mt-1.5 inline-block bg-black px-5 py-3 text-xs font-medium upprcase tracking-wide text-white"
                             }>Logout</button> : <button className={
                                 "mt-1.5 inline-block bg-black px-5 py-3 text-xs font-medium upprcase tracking-wide text-white"
-                            }>Login</button>
+                            }  onClick={() => router.push('/login')}>Login</button>
                         }
                         <button
                             data-collapse-toggle="navbar-sticky"
