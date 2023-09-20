@@ -1,12 +1,14 @@
 'use client';
-import { createContext } from "react";
+import React, { createContext, useState, useMemo } from "react";
 
-export const GlobalConetxt = createContext(null);
+export const GlobalContext = createContext(null);
 
-export default function GlobalState({childern}) {
+export default function GlobalState({ children }) {
+    const [showNavModal, setShowNavModal] = useState(false);
+
     return (
-        <GlobalConetxt.Provider value={{}}>
-            {childern}
-        </GlobalConetxt.Provider>
-    )
+        <GlobalContext.Provider value={{ showNavModal, setShowNavModal }}>
+            {children}
+        </GlobalContext.Provider>
+    );
 }
