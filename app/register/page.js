@@ -1,13 +1,14 @@
 'use client';
 
 
-import { useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useRouter } from "next/navigation"; 
 import { registrationFormControls } from "../utils";
 import InputComponent from "../component/formElements/InputComponent/Index";
 import SelectComponent from "../component/formElements/SelectComponent/Index";
 import { registerNewUser } from "../services/register";
 import { toast } from "react-toastify";
+import { GlobalContext } from "../context/Index";
 
 const initialFormData = {
   name: '',
@@ -20,6 +21,8 @@ export default function Register() {
   const [formData, setFormData] = useState(initialFormData);
   const [isRegistered, setIsRegistered] = useState(false);
   const router = useRouter();
+
+  const { isAuthUser } = useContext(GlobalContext);
 
   function isFormValid() {
     return (
@@ -50,6 +53,13 @@ export default function Register() {
       console.error("An error occurred while registering:", error);
     }
   }
+
+  useEffect(() => {
+    if (isAuthUser) {
+      router.push('/')
+    }
+  }, [isAuthUser])
+
 
   return (
     <div className="bg-white relative">

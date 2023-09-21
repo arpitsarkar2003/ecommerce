@@ -9,6 +9,9 @@ import { useContext, useEffect, useState } from "react";
 import { login } from "../services/login";
 import Cookies from "js-cookie";
 import { GlobalContext } from "../context/Index";
+import { toast } from "react-toastify";
+import Notification from "../component/Notification/Index";
+import ComponentLevelLoader from "../component/Loader/componentLevel/Index";
 
 const initialFormData = {
   email: '',
@@ -17,41 +20,51 @@ const initialFormData = {
 
 export default function Login() {
   const [formData, setFormData] = useState(initialFormData);
-    const router = useRouter();
-    const { isAuthUser, setIsAuthUser, user, setUser } = useContext(GlobalContext);
+  const router = useRouter();
+  const { isAuthUser, setIsAuthUser, user, setUser, componentLevelLoader,
+    setComponentLevelLoader, } = useContext(GlobalContext);
 
-    // console.log(formData)
+  // console.log(formData)
 
-    function isFormValid() {
-      return (
-        formData &&
-        formData.email.trim() !== "" &&
-        formData.password.trim() !== ""
-      );
+  function isFormValid() {
+    return (
+      formData &&
+      formData.email.trim() !== "" &&
+      formData.password.trim() !== ""
+    );
+  }
+
+  async function handleLogin() {
+    setComponentLevelLoader({ loading: true, id: "" });
+    const res = await login(formData)
+    // console.log(res)
+    if (res.success) {
+      toast.success(res.message, {
+        position: toast.POSITION.TOP_RIGHT,
+      });
+      setIsAuthUser(true)
+      setUser(res?.finalData?.user);
+      setFormData(initialFormData);
+      Cookies.set('token', res?.finalData?.token)
+      localStorage.setItem('user', JSON.stringify(res?.finalData?.user))
+      setComponentLevelLoader({ loading: false, id: "" });
+    } else {
+      toast.error(res.message, {
+        position: toast.POSITION.TOP_RIGHT,
+      });
+      setIsAuthUser(false)
+      setComponentLevelLoader({ loading: false, id: "" });
     }
+  }
 
-    async function handleLogin() {
-      const res = await login(formData)
-      // console.log(res)
-      if(res.success) {
-          setIsAuthUser(true)
-          setUser(res?.finalData?.user);
-          setFormData(initialFormData);
-          Cookies.set('token', res?.finalData?.token)
-          localStorage.setItem('user', JSON.stringify(res?.finalData?.user))
-      } else {
-        setIsAuthUser(false)
-      }
+  // console.log(isAuthUser,user)
+
+  useEffect(() => {
+    if (isAuthUser) {
+      router.push('/')
     }
+  }, [isAuthUser])
 
-    // console.log(isAuthUser,user)
-
-    useEffect(() => {
-      if(isAuthUser) {
-        router.push('/')
-      }
-    }, [isAuthUser])
-    
   return (
     <div className="bg-white relative">
       <div className="flex flex-col items-center justify-between pt-0 pr-10 pb-0 pl-10 mt-8 mr-auto xl:px-5 lg:flex-row">
@@ -61,24 +74,12 @@ export default function Login() {
               <p className="w-full text-4xl font-medium text-center font-serif">
                 Login
               </p>
-             <div className="w-full mt-6 mr-0 mb-0 ml-0 relative space-y-8">
-                  {
-                    loginFormControls.map((controlItem) => controlItem.componentType === "input" ? (
-                      <InputComponent 
-                      type={controlItem.type} 
-                      placeholder={controlItem.placeholder} 
-                      label={controlItem.label} 
-                      onChange={(event) => {
-                        setFormData({
-                          ...formData,
-                          [controlItem.id]: event.target.value,
-                        });
-                      }}
-                      value={formData[controlItem.id]}
-                      /> 
-                    ) : controlItem.componentType === "select" ? (
-                      <SelectComponent 
-                      options={controlItem.options} 
+              <div className="w-full mt-6 mr-0 mb-0 ml-0 relative space-y-8">
+                {
+                  loginFormControls.map((controlItem) => controlItem.componentType === "input" ? (
+                    <InputComponent
+                      type={controlItem.type}
+                      placeholder={controlItem.placeholder}
                       label={controlItem.label}
                       onChange={(event) => {
                         setFormData({
@@ -87,17 +88,39 @@ export default function Login() {
                         });
                       }}
                       value={formData[controlItem.id]}
-                      /> 
-                    ) : null
+                    />
+                  ) : controlItem.componentType === "select" ? (
+                    <SelectComponent
+                      options={controlItem.options}
+                      label={controlItem.label}
+                      onChange={(event) => {
+                        setFormData({
+                          ...formData,
+                          [controlItem.id]: event.target.value,
+                        });
+                      }}
+                      value={formData[controlItem.id]}
+                    />
+                  ) : null
                   )}
-                  <button
-                    className="disabled:opacity-50 inline-flex w-full items-center justify-center bg-black px-6 py-4 text-lg text-white transition-all duration-200 ease-in-out focus:shadow font-medium uppercase tracking-wide"
-                    disabled={!isFormValid()}
-                    onClick={handleLogin}
-                  >
-                    Login
-                  </button>
-                  <div className="flex flex-col gap-2">
+                <button
+                  className="disabled:opacity-50 inline-flex w-full items-center justify-center bg-black px-6 py-4 text-lg text-white transition-all duration-200 ease-in-out focus:shadow font-medium uppercase tracking-wide"
+                  disabled={!isFormValid()}
+                  onClick={handleLogin}
+                >
+                  {ComponentLevelLoader && componentLevelLoader.loading ? (
+                    <ComponentLevelLoader
+                      text={"Logging In"}
+                      color={"#ffffff"}
+                      loading={
+                        componentLevelLoader && componentLevelLoader.loading
+                      }
+                    />
+                  ) : (
+                    "Login"
+                  )}
+                </button>
+                <div className="flex flex-col gap-2">
                   <p><sapn className="hover:underline cursor-pointer" onClick={() => router.push("/register")}>New to website ?</sapn></p>
                   <button
                     className="inline-flex w-full items-center justify-center bg-black px-6 py-4 text-lg 
@@ -108,11 +131,12 @@ export default function Login() {
                     Register
                   </button>
                 </div>
-                </div> 
+              </div>
             </div>
           </div>
         </div>
       </div>
+      <Notification/>
     </div>
   )
 }
