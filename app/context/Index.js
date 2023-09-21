@@ -1,6 +1,6 @@
 'use client';
 import Cookies from "js-cookie";
-import React, { createContext, useState, useMemo, useEffect } from "react";
+import React, { createContext, useState, useEffect } from "react";
 
 export const GlobalContext = createContext(null);
 

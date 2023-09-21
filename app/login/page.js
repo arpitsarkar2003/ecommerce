@@ -20,7 +20,7 @@ export default function Login() {
     const router = useRouter();
     const { isAuthUser, setIsAuthUser, user, setUser } = useContext(GlobalContext);
 
-    console.log(formData)
+    // console.log(formData)
 
     function isFormValid() {
       return (
@@ -32,7 +32,7 @@ export default function Login() {
 
     async function handleLogin() {
       const res = await login(formData)
-      console.log(res)
+      // console.log(res)
       if(res.success) {
           setIsAuthUser(true)
           setUser(res?.finalData?.user);
@@ -44,12 +44,11 @@ export default function Login() {
       }
     }
 
-    console.log(isAuthUser,user)
+    // console.log(isAuthUser,user)
 
     useEffect(() => {
       if(isAuthUser) {
         router.push('/')
-        alert('You are already logged in')
       }
     }, [isAuthUser])
     

@@ -5,12 +5,9 @@ import { adminNavOptions, navOptions } from "@/app/utils";
 import { Fragment, useContext } from "react";
 import CommonModal from "../CommonModal/Index";
 import { useRouter } from "next/navigation";
+import Cookies from "js-cookie";
 
 const isAdminView = false;
-const isAuthView = false;
-const user = {
-    role: 'admin'
-}
 
 const adminview = (role) => {
     if (role === 'admin' && isAdminView) {
@@ -58,8 +55,18 @@ export default function Navbar() {
 
     const { showNavModal, setShowNavModal } = useContext(GlobalContext);
     const router = useRouter();
+    const { isAuthUser, user, setIsAuthUser, setUser} = useContext(GlobalContext);
+    console.log(isAuthUser, user , 'navbar');
 
 
+
+    function handleLogout() {
+        setIsAuthUser(false);
+        setUser(null);
+        Cookies.remove('token');
+        localStorage.clear();
+        router.push('/')
+    }
     return (
         <div>
             <div className="bg-white fixed w-full z-20 left-0 top-0 border-b border-gray-200">
@@ -69,7 +76,7 @@ export default function Navbar() {
                     </div>
                     <div className="flex md:order-2 gap-2">
                         {
-                            !isAdminView && isAuthView ?
+                            !isAdminView && user ?
                                 (
                                     <Fragment>
                                         <button className={
@@ -87,7 +94,7 @@ export default function Navbar() {
                                 : null
                         }
                         {
-                            isAuthView ? <button className={
+                            user ? <button onClick={handleLogout} className={
                                 "mt-1.5 inline-block bg-black px-5 py-3 text-xs font-medium upprcase tracking-wide text-white"
                             }>Logout</button> : <button className={
                                 "mt-1.5 inline-block bg-black px-5 py-3 text-xs font-medium upprcase tracking-wide text-white"

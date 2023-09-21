@@ -1,13 +1,13 @@
 'use client';
 
-// Import necessary modules and components
+
 import { useState } from "react";
-import { useRouter } from "next/navigation"; // Use "next/router" instead of "next/navigation"
+import { useRouter } from "next/navigation"; 
 import { registrationFormControls } from "../utils";
 import InputComponent from "../component/formElements/InputComponent/Index";
 import SelectComponent from "../component/formElements/SelectComponent/Index";
 import { registerNewUser } from "../services/register";
-import { toast } from "react-toastify"; // Import toast for notifications
+import { toast } from "react-toastify";
 
 const initialFormData = {
   name: '',
@@ -21,7 +21,6 @@ export default function Register() {
   const [isRegistered, setIsRegistered] = useState(false);
   const router = useRouter();
 
-  // Function to check if the form is valid
   function isFormValid() {
     return (
       formData &&
@@ -87,7 +86,7 @@ export default function Register() {
                         }}
                         value={formData[controlItem.id]}
                       />
-                    ) : controlItem.componentType === "select" ? (
+                    ) :  controlItem.componentType === "select" ? (
                       <SelectComponent
                         key={controlItem.id}
                         options={controlItem.options}
