@@ -13,9 +13,9 @@ export default function GlobalState({ children }) {
     });
     const [isAuthUser, setIsAuthUser] = useState(null);
     const [user, setUser] = useState(null);
-
+    const [CurrentUpdateProduct, setCurrentUpdateProduct] = useState(null);
     useEffect(() => {
-        console.log(Cookies.get('token'))
+        // console.log(Cookies.get('token'))
         if (Cookies.get('token') !== undefined) {
             setIsAuthUser(true);
             const userData = JSON.parse(localStorage.getItem('user')) || {};
@@ -26,7 +26,7 @@ export default function GlobalState({ children }) {
     }, [Cookies])
 
     return (
-        <GlobalContext.Provider value={{ showNavModal, setShowNavModal, isAuthUser, setIsAuthUser, user, setUser, pageLevelLoader, setPageLevelLoader, componentLevelLoader, setComponentLevelLoader }}>
+        <GlobalContext.Provider value={{ showNavModal, setShowNavModal, isAuthUser, setIsAuthUser, user, setUser, pageLevelLoader, setPageLevelLoader, componentLevelLoader, setComponentLevelLoader,CurrentUpdateProduct, setCurrentUpdateProduct }}>
             {children}
         </GlobalContext.Provider>
     );
